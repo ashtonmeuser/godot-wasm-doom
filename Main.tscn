@@ -1,0 +1,15 @@
+[gd_scene load_steps=2 format=3 uid="uid://dlkopysks661j"]
+
+[ext_resource type="Script" path="res://Main.gd" id="1_igxth"]
+
+[node name="Main" type="MarginContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 4
+script = ExtResource("1_igxth")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 2
