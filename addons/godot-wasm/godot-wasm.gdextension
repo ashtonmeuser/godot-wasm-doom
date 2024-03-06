@@ -13,3 +13,9 @@ linux.debug.x86_32 = "bin/linux/libgodot-wasm.so"
 linux.release.x86_32 = "bin/linux/libgodot-wasm.so"
 macos.debug = "bin/macos/libgodot-wasm.dylib"
 macos.release = "bin/macos/libgodot-wasm.dylib"
+
+[dependencies]
+windows.debug.x86_64 = { "bin/windows/wasmtime.dll": "" }
+windows.release.x86_64 = { "bin/windows/wasmtime.dll": "" }
+windows.debug.x86_32 = { "bin/windows/wasmtime.dll": "" }
+windows.release.x86_32 = { "bin/windows/wasmtime.dll": "" }
