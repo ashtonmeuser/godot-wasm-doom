@@ -1,6 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://dlkopysks661j"]
+[gd_scene load_steps=3 format=3 uid="uid://dlkopysks661j"]
 
 [ext_resource type="Script" path="res://Main.gd" id="1_igxth"]
+
+[sub_resource type="ImageTexture" id="ImageTexture_4drnt"]
 
 [node name="Main" type="MarginContainer"]
 anchors_preset = 15
@@ -13,3 +15,4 @@ script = ExtResource("1_igxth")
 
 [node name="TextureRect" type="TextureRect" parent="."]
 layout_mode = 2
+texture = SubResource("ImageTexture_4drnt")
