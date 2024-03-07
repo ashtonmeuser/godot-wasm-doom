@@ -35,7 +35,9 @@ Now we'll need to install the [Godot Wasm addon](https://github.com/ashtonmeuser
 
 With the addon installed, let's create a simple Godot project. Open Godot, create a new project, add a single [MarginContainer](https://docs.godotengine.org/en/stable/classes/class_margincontainer.html), and anchor it as a Full Rect to occupy the entire view. When first running the project, you'll need to confirm that this scene is to be used as the main scene.
 
-[screenshot]
+<p align="center">
+<img width="896" alt="Create main container" src="https://github.com/ashtonmeuser/godot-wasm-doom/assets/7253863/085c8d1d-0897-4568-aa75-c1bcda98ca40">
+</p>
 
 Copy the downloaded *doom.wasm* file to the root directory of your Godot project.
 
@@ -489,7 +491,9 @@ We know from Doom's logs that the screen dimensions are defined as 320x200.
 
 We're finally getting to some graphical work in Godot. Click the 2D view and ensure the previously-added MarginContainer is set to anchor mode Full Rect. Add a [TextureRect](https://docs.godotengine.org/en/stable/classes/class_texturerect.html) to the MarginContainer. Select the TextureRect and on the right side of the screen, set the *Texture* property with a new [ImageTexture](https://docs.godotengine.org/en/stable/classes/class_imagetexture.html).
 
-[screenshot]
+<p align="center">
+<img width="1092" alt="Add TextureRect" src="https://github.com/ashtonmeuser/godot-wasm-doom/assets/7253863/ed54c6d3-8fcb-4c9e-8837-4d253dd6dfb8">
+</p>
 
 Back to the code. We'll need to instantiate an [Image](https://docs.godotengine.org/en/stable/classes/class_image.html) that holds the graphical data created by Doom. The image's data will be flashed to the ImageTexture created above. At the top of *Main.gd*, with the `@onready` variables, add the following.
 
@@ -516,13 +520,17 @@ func draw_screen(offset):
 	$TextureRect.texture.update(image)
 ```
 
-Running the project, we'll get our first glimpse at Doom!
+Running the project, we'll get our first glimpse of Doom!
 
-[screenshot]
+<p align="center">
+<img width="688" alt="First glimpse of Doom" src="https://github.com/ashtonmeuser/godot-wasm-doom/assets/7253863/1698e3b2-9541-4162-8749-8644bfa7d90a">
+</p>
 
 Something doesn't look quite right. In debugging this graphical issue with reference to Diekmann's example, it's clear that we should be using screen dimensions 640x400. I'm not entirely sure where the discrepancy between the reported and actual resolutions comes from. Modify the Image creation and `draw_screen()` methods to reflect the new 640x400 resolution. Run the project.
 
-[screenshot]
+<p align="center">
+<img width="688" alt="Fixed Doom rendering" src="https://github.com/ashtonmeuser/godot-wasm-doom/assets/7253863/90bc600d-16d4-4aaf-8b93-6a95921cd5bd">
+</p>
 
 Success! Doom should be correctly displayed in all its pixelated glory slowly shuffling through three title/demo screens.
 
@@ -584,7 +592,9 @@ func _input(event):
 
 Running the program, you should now be able to interact with Doom! Note that we're using the original [Doom key binds](https://www.starehry.eu/download/action3d/docs/Doom-Manual.pdf) e.g. CTRL: shoot, Space: use/open, Enter: select.
 
-[screenshot]
+<p align="center">
+<img width="688" alt="Interacting with Doom" src="https://github.com/ashtonmeuser/godot-wasm-doom/assets/7253863/fe5d2d1f-c23c-4c42-9c97-623fcb4ac860">
+</p>
 
 Lastly, let's implement the remaining key binds. The following ranges of Godot key codes will be mapped to Doom's expected values.
 - [65, 90]: Alphabetic ASCII key codes that must be mapped to their lowercase selves i.e. subtract 32.
