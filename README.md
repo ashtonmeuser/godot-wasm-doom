@@ -1,5 +1,9 @@
 # Porting Doom to Godot in 34 Lines of GDScript
 
+<p align="center">
+<img width="820" alt="Godot Wasm Doom" src="https://github.com/user-attachments/assets/2e29fc23-d591-4931-bffa-cc266f5e6de8">
+</p>
+
 Using a [WebAssembly Doom port](https://diekmann.github.io/wasm-fizzbuzz/doom/) and the [Godot Wasm addon](https://github.com/ashtonmeuser/godot-wasm), the 1993 classic Doom can be run and rendered in the [Godot game engine](https://godotengine.org/).
 
 This article documents the porting process. The resulting source code can be found [here](https://github.com/ashtonmeuser/godot-wasm-doom).
@@ -258,6 +262,9 @@ To call a Wasm export function, use the [`function()` method](https://github.com
 ```gdscript
 wasm.function("main", [0, 0])
 ```
+
+> [!Note]
+> The following sections document overcoming a since-fixed error with the Wasmer runtime (see https://github.com/wasmerio/wasmer/issues/4565). With the release of Wasmer [v4.3.5](https://github.com/wasmerio/wasmer/releases/tag/v4.3.5) and Godot Wasmer [v0.3.7](https://github.com/ashtonmeuser/godot-wasm/releases/tag/v0.3.7-godot-4), this issue can be ignored. Doom is compatible with Godot Wasm used as either a [Godot addon](https://godotengine.org/asset-library/asset/2535) or Godot module and using either the Wasmer or Wasmtime runtimes. Skip to [Initialize Doom, Take 2](#initialize-doom-take-2) to continue porting Doom.
 
 We should see some output as well as an error thrown.
 
