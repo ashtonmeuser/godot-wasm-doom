@@ -377,7 +377,7 @@ stdout: 1047488 38
 stdout: 1047488 26  
 console_log: 9469752 21
 
-The module is trying to log text, but strings are not a native type exchangeable between the host (Godot) and guest (Wasm module). We'll need to do interpret the data coming from the Wasm module.
+The module is trying to log text, but strings are not a native type exchangeable between the host (Godot) and guest (Wasm module). We'll need to interpret the data coming from the Wasm module.
 
 ## Implement Logging Imports
 
