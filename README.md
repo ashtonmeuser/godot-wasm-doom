@@ -381,7 +381,7 @@ The module is trying to log text, but strings are not a native type exchangeable
 
 ## Implement Logging Imports
 
-When calling our `main()` export function, the Wasm module called the `console_log()` and `stdout` import functions. We'll implement some basic logging to aid in debugging.
+When calling our `main()` export function, the Wasm module called the `console_log()` and `stdout()` import functions. We'll implement some basic logging to aid in debugging.
 
 Some background regarding Wasm memory is important at this stage of the journey. WebAssembly memory is simply a contiguous buffer or array of bytes. As we saw earlier, this array can be expanded or grown. Memory is very important and frequently used with Wasm because of the limited API that can be exposed via import/export functions, also known as the Foreign Function Interface, or FFI. Only the following four fundamental data types can be directly exposed via Wasm import/export functions:
 - 32-bit integer
