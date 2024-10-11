@@ -253,7 +253,7 @@ As an aside, the compilation and instantiation steps can be completed in one cal
 wasm.load(file, imports)
 ```
 
-## Initialize Doom, Take 1
+## Initialize Doom, Part 1
 
 Let's attempt to get Doom running. Referring to the Wasm module inspection from earlier, take note of the exported function `main()`. Sure enough, Diekmann's implementation calls this function first to initialize Doom. It takes two integers as arguments and returns an integer. The argument values go unused, and we'll ignore the return value.
 
@@ -264,7 +264,13 @@ wasm.function("main", [0, 0])
 ```
 
 > [!Note]
-> The following sections document overcoming a since-fixed error with the Wasmer runtime (see https://github.com/wasmerio/wasmer/issues/4565). With the release of Wasmer [v4.3.5](https://github.com/wasmerio/wasmer/releases/tag/v4.3.5) and Godot Wasm [v0.3.7](https://github.com/ashtonmeuser/godot-wasm/releases/tag/v0.3.7-godot-4), this issue can be ignored. Doom is compatible with Godot Wasm used as either a [Godot addon](https://godotengine.org/asset-library/asset/2535) or Godot module and using either the Wasmer or Wasmtime runtimes. Skip to [Initialize Doom, Take 2](#initialize-doom-take-2) to continue porting Doom.
+> The following section documents overcoming a since-fixed error with the Wasmer runtime (see https://github.com/wasmerio/wasmer/issues/4565). With the release of Wasmer [v4.3.5](https://github.com/wasmerio/wasmer/releases/tag/v4.3.5) and Godot Wasm [v0.3.7](https://github.com/ashtonmeuser/godot-wasm/releases/tag/v0.3.7-godot-4), this issue can be ignored. Doom is compatible with Godot Wasm used as either a [Godot addon](https://godotengine.org/asset-library/asset/2535) or Godot module and using either the Wasmer or Wasmtime runtimes. Skip to [Initialize Doom, Take 2](#initialize-doom-take-2) to continue porting Doom.
+
+<details>
+
+<summary>Debugging Wasmer Runtime Error</summary>
+
+### Wasmer Runtime Error
 
 We should see some output as well as an error thrown.
 
@@ -277,7 +283,7 @@ console_log: 7078072 55
 
 Our `main()` function failed; let's dive a little deeper.
 
-## Implement Logging Imports
+### Implement Logging Imports
 
 When calling our `main()` export function, the Wasm module called the `console_log()` import function twice before the invocation failed. We'll implement some basic logging to aid in debugging.
 
@@ -316,7 +322,7 @@ Referencing Diekmann's example, we see the first two lines match. We can surmise
 
 > Starting D_DoomMain
 
-## Fruitlessly Debugging
+### Fruitlessly Debugging
 
 We're expecting to see logs from the initialization of Doom. Firstly, we expect to see "Starting D_DoomMain". Let's investigate the cause of the `main()` function invocation error.
 
@@ -335,9 +341,6 @@ if (trap) {
   wasm_trap_delete(trap);
 }
 ```
-
-> [!NOTE]
-> The macros used in Godot Wasm are currently undergoing changes. Instead of `PRINT_ERROR` you may need to use `GODOT_WASM_PRINT_ERROR` or directly call `UtilityFunctions::print(String(message.data))` depending on the version of Godot Wasm used.
 
 The above conditional reads the message from a returned `wasm_trap_t` pointer. Hopefully, this message provides some clarity.
 
@@ -365,7 +368,7 @@ Let's try allocating more memory. Using `memory.grow()`, allocate an assortment 
 
 No luck. Revert the memory size to 108 pages. Unfortunately, the error messages do not provide many clues to go on. However, we've got another trick up our sleeve.
 
-## Changing the WebAssembly Runtime
+### Changing the WebAssembly Runtime
 
 Godot Wasm supports both the [Wasmer](https://wasmer.io/) and [Wasmtime](https://wasmtime.dev/) runtimes. By default, Wasmer is used. As of writing this (2024-03-06), the prepackaged Godot Wasm addon, e.g., via Godot Asset Library, uses the default Wasmer runtime.
 
@@ -377,16 +380,17 @@ scons target=template_release platform=linux wasm_runtime=wasmtime
 
 Unless using a symbolic link between projects, package the addon binaries once again.
 
-> [!NOTE]
-> Compiling with the Wasmtime runtime on Windows is failing static linking as of Godot Wasm v0.3.4. In addition to the built Godot Wasm binaries, you'll need to copy *wasmtime.dll* to *GODOT_DOOM_DIR/addons/godot-wasm/bin/windows* and to update *godot-wasm.gdextension* to include the Wasmtime DLL as a dependency. Refer to the [*addons* directory of the project source](https://github.com/ashtonmeuser/godot-wasm-doom/tree/b4e80759a08cf4078b7bfafcb9662ec99f3c5ad8/addons/godot-wasm). This issue is now captured in [godot-wasm#65](https://github.com/ashtonmeuser/godot-wasm/issues/65).
+Note that compiling with the Wasmtime runtime on Windows is failing static linking as of Godot Wasm v0.3.4. In addition to the built Godot Wasm binaries, you'll need to copy *wasmtime.dll* to *GODOT_DOOM_DIR/addons/godot-wasm/bin/windows* and to update *godot-wasm.gdextension* to include the Wasmtime DLL as a dependency. Refer to the [*addons* directory of the project source](https://github.com/ashtonmeuser/godot-wasm-doom/tree/b4e80759a08cf4078b7bfafcb9662ec99f3c5ad8/addons/godot-wasm). This issue is now captured in [godot-wasm#65](https://github.com/ashtonmeuser/godot-wasm/issues/65).
 
 Running the Godot Wasm Doom project now produces a plethora of STDOUT output and no errors! Success!
 
 It seems as though there may be a deficiency with the Wasmer runtime (to be explored further).
 
-## Initialize Doom, Take 2
+</details>
 
-Now that our custom-built Godot Wasm addon is using Wasmtime as the underlying WebAssembly runtime, we're ready to return to the Godot Wasm Doom project. Running the project once again produces the following (truncated) logs:
+## Initialize Doom, Part 2
+
+Running the project once again produces the following (truncated) logs:
 
 > Hello, World, from JS Console! Answer=42 (101010 in binary)  
 Hello, world from rust! 🦀🦀🦀 (println! working)  
