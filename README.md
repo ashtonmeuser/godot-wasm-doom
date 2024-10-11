@@ -263,24 +263,6 @@ To call a Wasm export function, use the [`function()` method](https://github.com
 wasm.function("main", [0, 0])
 ```
 
-On initialization, Doom should print the followng (truncated) logs:
-
->stdout: 6423464 19  
-stdout: 1047791 1  
-stdout: 5260422 20  
-stdout: 6423464 24  
-stdout: 5260465 1  
-stdout: 6426720 83  
-...  
-stdout: 1047456 58  
-stdout: 1047456 24  
-stdout: 1047488 26  
-stderr: 1047440 29  
-stdout: 1047488 38  
-stdout: 1047488 26
-
-The module is trying to log text, but strings are not a native type exchangeable between the host (Godot) and guest (Wasm module). We'll need to 
-
 > [!Note]
 > The following section documents overcoming a since-fixed error with the Wasmer runtime (see https://github.com/wasmerio/wasmer/issues/4565). With the release of Wasmer [v4.3.5](https://github.com/wasmerio/wasmer/releases/tag/v4.3.5) and Godot Wasm [v0.3.7](https://github.com/ashtonmeuser/godot-wasm/releases/tag/v0.3.7-godot-4), this issue can be ignored. Doom is compatible with Godot Wasm used as either a [Godot addon](https://godotengine.org/asset-library/asset/2535) or Godot module and using either the Wasmer or Wasmtime runtimes. Skip to [Initialize Doom, Part 2](#initialize-doom-part-2) to continue porting Doom.
 
@@ -301,37 +283,9 @@ console_log: 7078072 55
 
 Our `main()` function failed; let's dive a little deeper.
 
-### Implement Logging Imports
+Implement logging as outlined in [Implement Logging Imports](#implement-logging-imports).
 
-When calling our `main()` export function, the Wasm module called the `console_log()` import function twice before the invocation failed. We'll implement some basic logging to aid in debugging.
-
-Some background regarding Wasm memory is important at this stage of the journey. WebAssembly memory is simply a contiguous buffer or array of bytes. As we saw earlier, this array can be expanded or grown. Memory is very important and frequently used with Wasm because of the limited API that can be exposed via import/export functions, also known as the Foreign Function Interface, or FFI. Only the following four fundamental data types can be directly exposed via Wasm import/export functions:
-- 32-bit integer
-- 64-bit integer
-- 32-bit floating point
-- 64-bit floating point
-
-This begs the question: how do we transfer a string between Godot (the host) and the Wasm module (the guest)?
-
-The answer is to take advantage of the module's memory. The Wasm module can write a string to memory in an agreed-upon format, and the host, i.e., Godot, can later read it. The host can be instructed where in memory to begin reading and how many bytes to read with simple integer values passed via import/export functions.
-
-Godot Wasm's `WasmMemory` class (see [`WasmMemory` class documentation](https://github.com/ashtonmeuser/godot-wasm/wiki/Class-Documentation:-WasmMemory)) inherits from Godot's own [`StreamPeer` class](https://docs.godotengine.org/en/stable/classes/class_streampeer.html) and closely mirrors Godot's [`StreamPeerBuffer` class](https://docs.godotengine.org/en/stable/classes/class_streampeerbuffer.html#class-streampeerbuffer). This allows us to easily read raw bytes in a variety of contexts.
-
-We now have the context required to implement our logging functions. We've already seen that the `js.js_console_log` import function accepts two integers as arguments. These integers represent the data offset, i.e., starting point and the data length, respectively. We'll use these to read the data to be printed. Referring to Diekmann's example, we expect strings to be stored as UTF-8. Reimplement the `stdout` and `console_log` GDScript functions as follows:
-
-```gdscript
-func stdout(offset, length):
-	memory.seek(offset)
-	var message = memory.get_utf8_string(length)
-	print(message)
-
-func console_log(offset, length):
-	stdout(offset, length) # Reuse stdout implementation
-```
-
-The `seek()` method moves the cursor to a memory offset, while `get_utf8_string()` (inherited from `StreamPeer`) reads a UTF-8 string from raw bytes.
-
-Running the project again reveals the expected data printed to the console before `main()` fails.
+After implementing logging and running the project again, the expected data is printed to the console before `main()` fails.
 
 > Hello, World, from JS Console! Answer=42 (101010 in binary)  
 Hello, world from rust! 🦀🦀🦀 (println! working)
@@ -405,6 +359,55 @@ Running the Godot Wasm Doom project now produces a plethora of STDOUT output and
 It seems as though there may be a deficiency with the Wasmer runtime (to be explored further).
 
 </details>
+
+On initialization, Doom should print the following (truncated) logs:
+
+>stdout: 6423464 19  
+console_log: 7077952 59  
+console_log: 7078072 55  
+stdout: 6423464 19  
+stdout: 1047791 1  
+stdout: 5260422 20  
+stdout: 6423464 24  
+...  
+stdout: 1047456 24  
+stdout: 1047488 26  
+stderr: 1047440 29  
+stdout: 1047488 38  
+stdout: 1047488 26  
+console_log: 9469752 21
+
+The module is trying to log text, but strings are not a native type exchangeable between the host (Godot) and guest (Wasm module). We'll need to do interpret the data coming from the Wasm module.
+
+## Implement Logging Imports
+
+When calling our `main()` export function, the Wasm module called the `console_log()` and `stdout` import functions. We'll implement some basic logging to aid in debugging.
+
+Some background regarding Wasm memory is important at this stage of the journey. WebAssembly memory is simply a contiguous buffer or array of bytes. As we saw earlier, this array can be expanded or grown. Memory is very important and frequently used with Wasm because of the limited API that can be exposed via import/export functions, also known as the Foreign Function Interface, or FFI. Only the following four fundamental data types can be directly exposed via Wasm import/export functions:
+- 32-bit integer
+- 64-bit integer
+- 32-bit floating point
+- 64-bit floating point
+
+This begs the question: how do we transfer a string between Godot (the host) and the Wasm module (the guest)?
+
+The answer is to take advantage of the module's memory. The Wasm module can write a string to memory in an agreed-upon format, and the host, i.e., Godot, can later read it. The host can be instructed where in memory to begin reading and how many bytes to read with simple integer values passed via import/export functions.
+
+Godot Wasm's `WasmMemory` class (see [`WasmMemory` class documentation](https://github.com/ashtonmeuser/godot-wasm/wiki/Class-Documentation:-WasmMemory)) inherits from Godot's own [`StreamPeer` class](https://docs.godotengine.org/en/stable/classes/class_streampeer.html) and closely mirrors Godot's [`StreamPeerBuffer` class](https://docs.godotengine.org/en/stable/classes/class_streampeerbuffer.html#class-streampeerbuffer). This allows us to easily read raw bytes in a variety of contexts.
+
+We now have the context required to implement our logging functions. We've already seen that the `js.js_console_log` import function accepts two integers as arguments. These integers represent the data offset, i.e., starting point and the data length, respectively. We'll use these to read the data to be printed. Referring to Diekmann's example, we expect strings to be stored as UTF-8. Reimplement the `stdout` and `console_log` GDScript functions as follows:
+
+```gdscript
+func stdout(offset, length):
+	memory.seek(offset)
+	var message = memory.get_utf8_string(length)
+	print(message)
+
+func console_log(offset, length):
+	stdout(offset, length) # Reuse stdout implementation
+```
+
+The `seek()` method moves the cursor to a memory offset, while `get_utf8_string()` (inherited from `StreamPeer`) reads a UTF-8 string from raw bytes.
 
 ## Initialize Doom, Part 2
 
