@@ -172,7 +172,7 @@ First, we'll satisfy function imports with stubbed-out functions. In your *Main.
 
 ```gdscript
 func console_log(offset, length):
-	print("console_log: %s" % [offset, length])
+	print("console_log: %s %s" % [offset, length])
 
 func stdout(offset, length):
 	print("stdout: %s %s" % [offset, length])
@@ -262,6 +262,24 @@ To call a Wasm export function, use the [`function()` method](https://github.com
 ```gdscript
 wasm.function("main", [0, 0])
 ```
+
+On initialization, Doom should print the followng (truncated) logs:
+
+>stdout: 6423464 19  
+stdout: 1047791 1  
+stdout: 5260422 20  
+stdout: 6423464 24  
+stdout: 5260465 1  
+stdout: 6426720 83  
+...  
+stdout: 1047456 58  
+stdout: 1047456 24  
+stdout: 1047488 26  
+stderr: 1047440 29  
+stdout: 1047488 38  
+stdout: 1047488 26
+
+The module is trying to log text, but strings are not a native type exchangeable between the host (Godot) and guest (Wasm module). We'll need to 
 
 > [!Note]
 > The following section documents overcoming a since-fixed error with the Wasmer runtime (see https://github.com/wasmerio/wasmer/issues/4565). With the release of Wasmer [v4.3.5](https://github.com/wasmerio/wasmer/releases/tag/v4.3.5) and Godot Wasm [v0.3.7](https://github.com/ashtonmeuser/godot-wasm/releases/tag/v0.3.7-godot-4), this issue can be ignored. Doom is compatible with Godot Wasm used as either a [Godot addon](https://godotengine.org/asset-library/asset/2535) or Godot module and using either the Wasmer or Wasmtime runtimes. Skip to [Initialize Doom, Part 2](#initialize-doom-part-2) to continue porting Doom.
