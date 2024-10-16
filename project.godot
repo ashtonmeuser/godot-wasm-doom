@@ -12,7 +12,7 @@ config_version=5
 
 config/name="Godot Wasm Doom"
 run/main_scene="res://Main.tscn"
-config/features=PackedStringArray("4.2", "Forward Plus")
+config/features=PackedStringArray("4.3", "Forward Plus")
 
 [rendering]
 

@@ -18,7 +18,7 @@ func _ready():
 	wasm.function("main", [0, 0])
 
 func _process(_delta):
-	wasm.function("doom_loop_step", [])
+	wasm.function("doom_loop_step")
 
 func _input(event):
 	if event is InputEventKey and !event.is_echo(): wasm.function("add_browser_event", [int(!event.is_pressed()), keys.get(event.keycode, 0)])

@@ -33,9 +33,9 @@ This article is written in a similar fashion to Diekmann's with the hope that so
 
 The first thing we'll need is the Doom WebAssembly module. By inspecting the sources of [Diekmann's Wasm Doom example](https://diekmann.github.io/wasm-fizzbuzz/doom/), we can find and download the *doom.wasm* module (available [here](https://diekmann.github.io/wasm-fizzbuzz/doom/doom.wasm)).
 
-Next, we'll need to install the [Godot game engine](https://godotengine.org/download/). Version 4.2.1 was used for this project.
+Next, we'll need to install the [Godot game engine](https://godotengine.org/download/). Version 4.3 was used for this project.
 
-Now we'll need to install the [Godot Wasm addon](https://github.com/ashtonmeuser/godot-wasm). This is available via the [Godot Asset Library](https://godotengine.org/asset-library/asset/2535). Further instructions regarding getting started with the Godot Wasm addon can be found [here](https://github.com/ashtonmeuser/godot-wasm/wiki/Getting-Started#installation).
+Now we'll need to install the [Godot Wasm addon](https://github.com/ashtonmeuser/godot-wasm). This is available via the [Godot Asset Library](https://godotengine.org/asset-library/asset/3401). Further instructions regarding getting started with the Godot Wasm addon can be found [here](https://github.com/ashtonmeuser/godot-wasm/wiki/Getting-Started#installation). Version 0.3.8 was used for this project.
 
 With the addon installed, let's create a simple Godot project. Open Godot, create a new project, add a single [`MarginContainer` node](https://docs.godotengine.org/en/stable/classes/class_margincontainer.html), and anchor it as a Full Rect to occupy the entire view. When first running the project, you'll need to confirm that this scene is to be used as the main scene.
 
@@ -134,7 +134,8 @@ This should print the following (formatted for clarity).
    },
    "memory": {
       "min": 6684672,
-      "max": 4294901760
+      "max": 4294901760,
+      "import": true
    }
 }
 ```
@@ -157,7 +158,7 @@ Instantiation of our Wasm module is failing because we're not providing the expe
 
 ## Satisfying Imports
 
-Referring back to the inspection of the module, we can see five import functions. If you inspect the module via the Wasmer CLI tool, you'll also note that the module requires a memory import.
+Referring back to the inspection of the module, we can see five import functions. Additionally, note that the module requires a memory import.
 
 By viewing the *main.js* source of Diekmann's example, we can confirm that the following import functions are provided:
 1. `js.js_console_log`
@@ -483,10 +484,10 @@ Referring once again to Diekmann's example, we can see that there are only three
 1. `doom_loop_step`
 1. `add_browser_event`
 
-Let's proceed to calling the main Doom game loop. At the end of the `_ready()` function in your *Main.gd* script, call the `doom_loop_step()` export function.
+Let's proceed to calling the main Doom game loop. At the end of the `_ready()` function in your *Main.gd* script, call the `doom_loop_step()` export function. Because, as we saw in the inspection, the `doom_loop_step()` export function accepts no arguments, we can omit the arguments array.
 
 ```gdscript
-wasm.function("doom_loop_step", [])
+wasm.function("doom_loop_step")
 ```
 
 Running the project, we should see exactly one new log line appear.
@@ -499,7 +500,7 @@ The game loop should not just be called once. Rather, it should be called repeat
 
 ```gdscript
 func _process(_delta):
-	wasm.function("doom_loop_step", [])
+	wasm.function("doom_loop_step")
 ```
 
 Running the project again, we should see repeated calls to the `js.js_draw_screen` import function.
