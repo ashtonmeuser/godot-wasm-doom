@@ -265,7 +265,7 @@ wasm.function("main", [0, 0])
 ```
 
 > [!Note]
-> The following section documents overcoming a since-fixed error with the Wasmer runtime (see https://github.com/wasmerio/wasmer/issues/4565). With the release of Wasmer [v4.3.5](https://github.com/wasmerio/wasmer/releases/tag/v4.3.5) and Godot Wasm [v0.3.7](https://github.com/ashtonmeuser/godot-wasm/releases/tag/v0.3.7-godot-4), this issue can be ignored. Doom is compatible with Godot Wasm used as either a [Godot addon](https://godotengine.org/asset-library/asset/2535) or Godot module and using either the Wasmer or Wasmtime runtimes. Skip to [Initialize Doom, Part 2](#initialize-doom-part-2) to continue porting Doom.
+> The following section documents overcoming a since-fixed error with the Wasmer runtime (see https://github.com/wasmerio/wasmer/issues/4565). With the release of Wasmer [v4.3.5](https://github.com/wasmerio/wasmer/releases/tag/v4.3.5) and Godot Wasm [v0.3.7](https://github.com/ashtonmeuser/godot-wasm/releases/tag/v0.3.7-godot-4), this issue can be ignored. Doom is compatible with Godot Wasm used as either a [Godot addon](https://godotengine.org/asset-library/asset/2535) or Godot module and using either the Wasmer or Wasmtime runtimes. Skip to [Implement Logging Imports](#implement-logging-imports) to continue porting Doom.
 
 <details>
 
