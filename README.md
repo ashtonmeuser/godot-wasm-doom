@@ -623,7 +623,7 @@ func _input(event):
 		wasm.function("add_browser_event", [pressed, keycode])
 ```
 
-When running the program, you should now be able to interact with Doom! Note that we're using the original [Doom keybinds](https://www.starehry.eu/download/action3d/docs/Doom-Manual.pdf), e.g., CTRL: shoot, Space: use/open, Enter: select.
+When running the program, you should now be able to interact with Doom! Note that we're using the original [Doom keybinds](https://web.archive.org/web/https://www.starehry.eu/download/action3d/docs/Doom-Manual.pdf), e.g., CTRL: shoot, Space: use/open, Enter: select.
 
 <p align="center">
 <img width="688" alt="Interacting with Doom" src="https://github.com/ashtonmeuser/godot-wasm-doom/assets/7253863/fe5d2d1f-c23c-4c42-9c97-623fcb4ac860">
